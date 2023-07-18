@@ -1,9 +1,22 @@
 import "./App.css";
+import { useState } from "react";
+import axios from "axios";
 
 function App() {
+  const [weatherData, setWeatherData] = useState({});
+  const [location, setLocation] = useState("");
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&APPID=d9dd178a03a8b2221632a551dfd7b81b`;
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Seaaarch");
+    axios.get(url).then((response) => {
+      setWeatherData(response.data);
+      console.log(response.data);
+
+      setLocation(" ");
+    });
   };
   return (
     <div className="App">
@@ -13,6 +26,8 @@ function App() {
           <input
             type="text"
             className="search"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
             placeholder="Enter location..."
           />
           <button className="button" onClick={handleSearch}>
@@ -20,10 +35,14 @@ function App() {
           </button>
         </div>
         <div className="details">
-          <p>Town</p>
-          <h1>Temperature</h1>
-          <p>Cloudy or not</p>
-          <p>Humidity</p>
+          <p>{weatherData.name}</p>
+          {weatherData.main ? (
+            <h1>{weatherData.main.temp.toFixed()} °C</h1>
+          ) : null}
+          {weatherData.weather ? <p>{weatherData.weather[0].main}</p> : null}
+          {weatherData.main ? (
+            <p>{weatherData.main.humidity}% humidity</p>
+          ) : null}
         </div>
       </div>
     </div>
